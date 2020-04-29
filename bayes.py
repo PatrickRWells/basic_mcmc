@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class Posterior:
-    def __init__(self):
+    def __init__(self, num=100):
 
         """
         A posterior distribution. Basically a fake likelihood that draws from
@@ -21,12 +21,10 @@ class Posterior:
         """
 
 
-        self.samples = [np.random.normal() for i in range(100)]
-        self.num = 100
+        self.samples = np.random.normal(size=num)
+        self.num = num
         self.total = 0
-        
-        for _, val in enumerate(self.samples):
-            self.total += (val*val)
+        self.total += np.sum(self.samples**2)
         
         self.total = self.total/2
 
@@ -46,7 +44,7 @@ class Posterior:
         exp = a**(-self.total)
         return fact*exp
 
-    def plot_distribution(self, amin, amax, location = 'posterior.png'):
+    def plot_distribution(self, amin, amax, filename='posterior.png'):
 
         """
         Plots the posterior distribution
@@ -65,7 +63,7 @@ class Posterior:
         a = np.linspace(amin, amax, 1000)
         ys = self.prob(a)
         plt.plot(a,ys)
-        plt.savefig(location)
+        plt.savefig(filename)
         plt.close()
 
 class MCMC:
@@ -91,7 +89,7 @@ class MCMC:
         self.posterior = Posterior()
         self.variance = 0
     
-    def plot_posterior(self, amin = 1, amax = 5, location = 'posterior.png'):
+    def plot_posterior(self, amin = 1, amax = 5, filename='posterior.png'):
         """
         Plots the posterior distribution
         
@@ -105,7 +103,7 @@ class MCMC:
             location where the figure will be saved
             defualts to home folder
         """
-        self.posterior.plot_distribution(amin, amax, location)
+        self.posterior.plot_distribution(amin, amax, filename)
 
     
     def draw_sample(self, xt):
@@ -220,7 +218,7 @@ class Chain:
 
         self.samples = np.append(self.samples, x)
     
-    def plot_histogram(self, bins = 100, location = 'histogram.png'):
+    def plot_histogram(self, bins = 100, filename='histogram.png'):
         """
         Plots a histogram for sampels in the chain
 
@@ -233,10 +231,10 @@ class Chain:
             location to save the figure
         """
         plt.hist(self.samples, bins)
-        plt.savefig(location)
+        plt.savefig(filename)
         plt.close()
     
-    def trace_plot(self, location = 'trace_plot.png'):
+    def trace_plot(self, filename='trace_plot.png'):
         """
         Plots the value of the parameter as a function
         of sample number
@@ -248,7 +246,7 @@ class Chain:
         """
         nums = [i+1 for i in range(len(self.samples))]
         plt.plot(nums, self.samples)
-        plt.savefig(location)
+        plt.savefig(filename)
         plt.close()
 
 
